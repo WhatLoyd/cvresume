@@ -417,6 +417,9 @@ svg.icon {
     .kits_icons {
         flex-wrap: wrap;
     }
+   .thank-you img {
+	display: none;
+    }
 }
 @media all and (max-width: 1024px) {
     .my-photo {
