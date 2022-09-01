@@ -206,23 +206,23 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 .photoshop-icon {
-	background: url(/icons/photoshop-icon.svg);
+	background: url(./icons/photoshop-icon.svg);
 }
 
 .html-icon {
-	background: url(/icons/html-icon.svg);
+	background: url(./icons/html-icon.svg);
 }
 
 .css-icon {
-	background: url(/icons/css-icon.svg);
+	background: url(./icons/css-icon.svg);
 }
 
 .tilda-icon {
-	background: url(/icons/tilda-icon.svg);
+	background: url(./icons/tilda-icon.svg);
 }
 
 .wordpress-icon {
-	background: url(/icons/wordpress-icon.svg);
+	background: url(./icons/wordpress-icon.svg);
 }
 
 .work-examples {
