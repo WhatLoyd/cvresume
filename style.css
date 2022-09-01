@@ -425,4 +425,7 @@ svg.icon {
     .my-photo {
         display: none;
     }
+    .call-me p, .write-me p {
+	font-size: 16px;
+    }
 }
