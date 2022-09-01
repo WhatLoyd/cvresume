@@ -308,12 +308,10 @@ h1,h2,h3,h4,h5,h6 {
 
 .link-label-makler {
 	height: 60px;
-	background: #E6E6E6;
 	display: flex;
 	align-content: center;
 	align-items: center;
 	justify-content: center;
-	overflow-x:hidden;
 }
 
 .link-label-makler a {
