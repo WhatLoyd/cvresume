@@ -390,3 +390,36 @@ svg.icon {
 	-ms-user-select: none;
 	user-select: none;
 }
+
+/* * *   media   * * */
+
+@media all and (max-width: 1320px) {
+    .wrapper {
+        padding: 0 24px;
+        max-width: 1190px;
+    }
+    .main {
+        margin: initial;
+    }
+    .header {
+        margin-top: 80px;
+    }
+    .block {
+        gap: 60px 0;
+        flex-direction: column;
+    }
+    .right-block__text p {
+        word-break: normal;
+    }
+    .icons {
+        margin-right: 20px;
+    }
+    .kits_icons {
+        flex-wrap: wrap;
+    }
+}
+@media all and (max-width: 1024px) {
+    .my-photo {
+        display: none;
+    }
+}
