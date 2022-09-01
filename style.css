@@ -421,11 +421,15 @@ svg.icon {
 	display: none;
     }
 }
+
 @media all and (max-width: 1024px) {
     .my-photo {
         display: none;
     }
     .call-me p, .write-me p {
 	font-size: 16px;
+    }
+    .call-me {
+	margin-right: 20px;
     }
 }
