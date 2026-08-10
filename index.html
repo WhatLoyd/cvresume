@@ -28,27 +28,79 @@ body {
   position: relative;
 }
 
-/* ============ SOFT BACKGROUND BLOBS ============ */
-body::before, body::after {
-  content: '';
+/* ============ ANIMATED BACKGROUND BLOBS ============ */
+.bg-blobs {
   position: fixed;
-  width: 60vw;
-  height: 60vw;
-  border-radius: 50%;
-  filter: blur(150px);
+  inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.25;
+  overflow: hidden;
 }
-body::before {
-  background: #FF0101;
-  top: -15vw;
-  left: -15vw;
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  will-change: transform, filter;
+  animation: floatBlob 25s ease-in-out infinite alternate;
 }
-body::after {
-  background: #0E01FF;
+.blob-1 {
+  width: 60vw;
+  height: 60vw;
+  top: -20vw;
+  left: -20vw;
+  background: radial-gradient(circle, #FF0101, #FF6B6B);
+  animation-duration: 30s;
+  animation-delay: 0s;
+}
+.blob-2 {
+  width: 50vw;
+  height: 50vw;
   bottom: -15vw;
   right: -15vw;
+  background: radial-gradient(circle, #0E01FF, #6B6BFF);
+  animation-duration: 25s;
+  animation-delay: -5s;
+}
+.blob-3 {
+  width: 40vw;
+  height: 40vw;
+  top: 10%;
+  right: 5%;
+  background: radial-gradient(circle, #FF00A0, #FF6BCA);
+  animation-duration: 35s;
+  animation-delay: -10s;
+  opacity: 0.25;
+}
+.blob-4 {
+  width: 30vw;
+  height: 30vw;
+  bottom: 20%;
+  left: 10%;
+  background: radial-gradient(circle, #00D4FF, #6BEFFF);
+  animation-duration: 28s;
+  animation-delay: -7s;
+  opacity: 0.2;
+}
+
+@keyframes floatBlob {
+  0%   { transform: translate(0, 0) scale(1) rotate(0deg); }
+  20%  { transform: translate(5%, 8%) scale(1.1) rotate(5deg); }
+  40%  { transform: translate(-8%, 3%) scale(0.9) rotate(-5deg); }
+  60%  { transform: translate(10%, -5%) scale(1.15) rotate(8deg); }
+  80%  { transform: translate(-5%, -10%) scale(0.95) rotate(-3deg); }
+  100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+}
+
+/* Дополнительное вращение оттенков для двух основных блобов */
+.blob-1 {
+  animation: floatBlob 30s ease-in-out infinite alternate, hueRotate 20s linear infinite;
+}
+.blob-2 {
+  animation: floatBlob 25s ease-in-out infinite alternate, hueRotate 18s linear infinite reverse;
+}
+@keyframes hueRotate {
+  0%   { filter: blur(120px) hue-rotate(0deg); }
+  100% { filter: blur(120px) hue-rotate(360deg); }
 }
 
 /* ============ TYPOGRAPHY ============ */
@@ -159,12 +211,10 @@ section { padding: 120px 0; position: relative; z-index: 1; }
   font-size: clamp(56px, 10vw, 128px);
   text-shadow: 0 4px 30px rgba(0,0,0,0.3);
 }
-/* Применяем градиент к буквам напрямую, чтобы избежать багов с прозрачностью родителя */
 .hero-name .char {
   background: linear-gradient(180deg, #ffffff 0%, #d4d4d8 100%);
   -webkit-background-clip: text;
   background-clip: text;
-  /* -webkit-text-fill-color: transparent; */
 }
 .hero-title {
   font-family: 'Google Sans', sans-serif;
@@ -495,7 +545,7 @@ section { padding: 120px 0; position: relative; z-index: 1; }
 
 .mixed-media-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Строго 4 элемента в ширину */
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
 .media-item {
@@ -506,7 +556,7 @@ section { padding: 120px 0; position: relative; z-index: 1; }
   position: relative;
   opacity: 0;
   transform: translateY(20px);
-  aspect-ratio: 9/16; /* Горизонтальная ориентация для фото и видео */
+  aspect-ratio: 9/16;
 }
 .media-item.visible {
   opacity: 1;
@@ -690,6 +740,14 @@ section { padding: 120px 0; position: relative; z-index: 1; }
 </style>
 </head>
 <body>
+
+<!-- ============ ANIMATED BACKGROUND BLOBS ============ -->
+<div class="bg-blobs">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
 
 <!-- ============ HERO ============ -->
 <header id="hero" class="hero">
@@ -1012,14 +1070,11 @@ section { padding: 120px 0; position: relative; z-index: 1; }
     return chars;
   }
 
-  // Рефакторинг Hero: используем gsap.set вместо CSS opacity, чтобы избежать FOUC (исчезновения)
   gsap.set('.reveal', { opacity: 0, y: 40 });
 
   const heroName = document.querySelector('.hero-name');
   if (heroName) {
     const nameChars = splitText(heroName);
-    
-    // Скрываем элементы только через GSAP, оставляя CSS чистым для fallback
     gsap.set([nameChars, '.hero-title', '.hero-subtitle', '.hero .btn', '.hero-scroll'], { opacity: 0, y: 20 });
     gsap.set(nameChars, { rotateZ: 4 });
 
@@ -1168,10 +1223,10 @@ section { padding: 120px 0; position: relative; z-index: 1; }
           video.muted = true;
           video.loop = true;
           video.playsInline = true;
-          video.preload = 'none'; // Оптимизация
+          video.preload = 'auto';  // ← предзагрузка всего видео
           div.appendChild(video);
           
-          // Оптимизация: Воспроизводим видео только когда оно в зоне видимости
+          // Управление воспроизведением при видимости
           const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
               if (entry.isIntersecting) {
@@ -1186,7 +1241,6 @@ section { padding: 120px 0; position: relative; z-index: 1; }
         
         mixedGrid.appendChild(div);
         
-        // Плавное появление
         setTimeout(() => {
           div.classList.add('visible');
         }, index * 50);
@@ -1209,7 +1263,6 @@ section { padding: 120px 0; position: relative; z-index: 1; }
     renderGrid();
   }
 
-  // Refresh ScrollTrigger on resize
   let resizeTimer;
   window.addEventListener('resize', function() {
     clearTimeout(resizeTimer);
