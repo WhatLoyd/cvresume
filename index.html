@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Стас Лукьянов — FullStack WebSite Administrator</title>
+<title>Станнис Велезов — FullStack WebSite Administrator</title>
 <meta name="description" content="Портфолио специалиста по веб-администрированию и цифровым проектам. Сайты, контент, автоматизация.">
+
+<!-- Предзагрузка фонового изображения для мгновенного отображения Hero -->
+<link rel="preload" as="image" href="./images/photo.webp">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,10 +26,31 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
 }
-img { max-width: 100%; display: block; }
-a { color: inherit; text-decoration: none; }
-button { font: inherit; cursor: pointer; border: none; background: none; }
+
+/* ============ SOFT BACKGROUND BLOBS ============ */
+body::before, body::after {
+  content: '';
+  position: fixed;
+  width: 60vw;
+  height: 60vw;
+  border-radius: 50%;
+  filter: blur(150px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.25;
+}
+body::before {
+  background: #FF0101;
+  top: -15vw;
+  left: -15vw;
+}
+body::after {
+  background: #0E01FF;
+  bottom: -15vw;
+  right: -15vw;
+}
 
 /* ============ TYPOGRAPHY ============ */
 h1, h2, h3, .display {
@@ -42,8 +66,10 @@ h1, h2, h3, .display {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 32px;
+  position: relative;
+  z-index: 1;
 }
-section { padding: 120px 0; position: relative; }
+section { padding: 120px 0; position: relative; z-index: 1; }
 
 .section-title {
   font-size: clamp(48px, 7vw, 88px);
@@ -102,6 +128,7 @@ section { padding: 120px 0; position: relative; }
   justify-content: center;
   overflow: hidden;
   padding: 0;
+  z-index: 1;
 }
 .hero-bg {
   position: absolute;
@@ -136,6 +163,7 @@ section { padding: 120px 0; position: relative; }
   background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 4px 30px rgba(0,0,0,0.3);
+  opacity: 0; /* Прячем до загрузки GSAP */
 }
 .hero-title {
   font-family: 'Inter', sans-serif;
@@ -145,13 +173,17 @@ section { padding: 120px 0; position: relative; }
   color: #fafafa;
   margin-bottom: 18px;
   font-weight: 500;
+  opacity: 0; /* Прячем до загрузки GSAP */
 }
 .hero-subtitle {
   font-size: 16px;
   color: #a1a1aa;
   margin-bottom: 44px;
   letter-spacing: 0.05em;
+  opacity: 0; /* Прячем до загрузки GSAP */
 }
+.hero .btn, .hero-scroll { opacity: 0; /* Прячем до загрузки GSAP */ }
+
 .hero-scroll {
   position: absolute;
   bottom: 40px;
@@ -311,7 +343,6 @@ section { padding: 120px 0; position: relative; }
   font-size: 14px;
   transition: all 0.3s ease;
   cursor: default;
-  position: relative;
 }
 .chip:hover {
   background: rgba(255,255,255,0.08);
@@ -397,49 +428,110 @@ section { padding: 120px 0; position: relative; }
   font-weight: 500;
 }
 
-/* ============ GALLERY ============ */
-.gallery-block { margin-top: 80px; }
-.gallery-block h3 {
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(36px, 5vw, 56px);
-  margin-bottom: 12px;
+/* ============ CREATIVITY BLOCK ============ */
+.creativity-block { margin-bottom: 80px; }
+.creativity-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #71717a;
+  margin-bottom: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-.gallery-block .gallery-desc {
-  color: #a1a1aa;
-  margin-bottom: 30px;
-  font-style: italic;
-  font-size: 16px;
+.creativity-title::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: rgba(255,255,255,0.2);
 }
-.gallery {
+.grid-3-square {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
-.gallery-item {
-  aspect-ratio: 3/2;
-  overflow: hidden;
+.creative-img, .flip-card {
+  aspect-ratio: 1/1;
+  width: 100%;
   border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.1);
-  position: relative;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
   background: #18181b;
 }
-.gallery-item::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 50%, rgba(9,9,11,0.4) 100%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  pointer-events: none;
+.creative-img {
+  object-fit: cover;
 }
-.gallery-item:hover::after { opacity: 1; }
-.gallery-item img {
+.creative-img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  border-color: rgba(255,255,255,0.3);
+}
+.pride-desc {
+  font-size: 15px;
+  color: #d4d4d8;
+  margin-bottom: 20px;
+  max-width: 800px;
+  line-height: 1.6;
+  font-style: italic;
+}
+.flip-card { perspective: 1000px; cursor: pointer; background: transparent; border: none; }
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+.flip-card-front, .flip-card-back {
+  position: absolute;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.7s cubic-bezier(.4,0,.2,1);
+  border-radius: 8px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-sizing: border-box;
 }
-.gallery-item:hover img { transform: scale(1.1); }
+.flip-card-back { transform: rotateY(180deg); }
+
+.mixed-media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+.media-item {
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  background: #18181b;
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.media-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.media-item img, .media-item video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+.media-item:hover img, .media-item:hover video {
+  transform: scale(1.05);
+}
+.media-photo { aspect-ratio: 1/1; }
+.media-video { aspect-ratio: 9/16; }
+
+.show-more-wrap { text-align: center; margin-top: 40px; }
 
 /* ============ USP ============ */
 .usp {
@@ -531,6 +623,8 @@ section { padding: 120px 0; position: relative; }
   color: #52525b;
   font-size: 13px;
   letter-spacing: 0.02em;
+  position: relative;
+  z-index: 1;
 }
 
 /* ============ REVEAL INITIAL STATE ============ */
@@ -539,17 +633,16 @@ section { padding: 120px 0; position: relative; }
 /* ============ RESPONSIVE ============ */
 @media (max-width: 1024px) {
   .projects-grid { grid-template-columns: repeat(2, 1fr); }
-  .gallery { grid-template-columns: repeat(3, 1fr); }
   .tools-grid { grid-template-columns: 1fr; gap: 40px; }
   .diagram { gap: 40px 28px; }
   .diagram-center { width: 150px; height: 150px; font-size: 36px; }
+  .mixed-media-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 768px) {
   section { padding: 80px 0; }
   .container { padding: 0 20px; }
   .projects-grid { grid-template-columns: 1fr; }
-  .gallery { grid-template-columns: repeat(2, 1fr); }
   .contacts-grid { grid-template-columns: 1fr; }
   .section-desc { font-size: 16px; margin-bottom: 40px; }
 
@@ -576,18 +669,21 @@ section { padding: 120px 0; position: relative; }
   .node-4 { grid-row: 5; }
   .node-5 { grid-row: 6; }
   .node-6 { grid-row: 7; }
+  
   .usp { padding: 90px 0; }
   .hero-scroll { display: none; }
+  .grid-3-square { grid-template-columns: 1fr; }
+  .mixed-media-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 480px) {
   section { padding: 60px 0; }
   .container { padding: 0 16px; }
-  .gallery { grid-template-columns: 1fr; }
   .project-card { padding: 28px 24px; }
   .contact-item { padding: 18px 20px; }
   .btn { width: 100%; }
   .hero-title { letter-spacing: 0.2em; }
+  .mixed-media-grid { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -597,7 +693,7 @@ section { padding: 120px 0; position: relative; }
     transition-duration: 0.01ms !important;
   }
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; }
+  .reveal, .hero-name, .hero-title, .hero-subtitle, .hero .btn, .hero-scroll { opacity: 1 !important; transform: none !important; }
 }
 </style>
 </head>
@@ -608,7 +704,7 @@ section { padding: 120px 0; position: relative; }
   <div class="hero-bg"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <h1 class="hero-name">Станнис Велесов</h1>
+    <h1 class="hero-name">Станнис Велезов</h1>
     <p class="hero-title">FullStack WebSite Administrator</p>
     <p class="hero-subtitle">21 год, Сеул, гр. Панама</p>
     <a href="#contacts" class="btn">Связаться</a>
@@ -765,21 +861,80 @@ section { padding: 120px 0; position: relative; }
         </div>
       </article>
     </div>
+  </div>
+</section>
 
-    <div class="gallery-block reveal">
-      <h3>Дизайн и логотипы</h3>
-      <p class="gallery-desc">Логотипы, баннеры, презентации, включая победителя государственного конкурса.</p>
-      <div class="gallery">
-        <div class="gallery-item"><img src="https://picsum.photos/seed/design-velezov-1/600/400" alt="Работа 1" loading="lazy"></div>
-        <div class="gallery-item"><img src="https://picsum.photos/seed/design-velezov-2/600/400" alt="Работа 2" loading="lazy"></div>
-        <div class="gallery-item"><img src="https://picsum.photos/seed/design-velezov-3/600/400" alt="Работа 3" loading="lazy"></div>
-        <div class="gallery-item"><img src="https://picsum.photos/seed/design-velezov-4/600/400" alt="Работа 4" loading="lazy"></div>
-        <div class="gallery-item"><img src="https://picsum.photos/seed/design-velezov-5/600/400" alt="Работа 5" loading="lazy"></div>
-        <div class="gallery-item"><img src="https://picsum.photos/seed/design-velezov-6/600/400" alt="Работа 6" loading="lazy"></div>
-        <div class="gallery-item"><img src="https://picsum.photos/seed/design-velezov-7/600/400" alt="Работа 7" loading="lazy"></div>
-        <div class="gallery-item"><img src="https://picsum.photos/seed/design-velezov-8/600/400" alt="Работа 8" loading="lazy"></div>
+<!-- ============ CREATIVITY ============ -->
+<section id="creativity">
+  <div class="container">
+    <h2 class="section-title" data-split>Творчество</h2>
+    <p class="section-desc reveal">Графика, логотипы, видеопродакшн и предметная съёмка.</p>
+
+    <!-- Сайты -->
+    <div class="creativity-block reveal">
+      <h3 class="creativity-title">Сайты</h3>
+      <div class="grid-3-square">
+        <img src="./images/new/site1.jpg" class="creative-img" loading="lazy" decoding="async" alt="Сайт 1">
+        <img src="./images/new/site2.jpg" class="creative-img" loading="lazy" decoding="async" alt="Сайт 2">
+        <img src="./images/new/site3.jpg" class="creative-img" loading="lazy" decoding="async" alt="Сайт 3">
       </div>
     </div>
+
+    <!-- Фотошоп -->
+    <div class="creativity-block reveal">
+      <h3 class="creativity-title">Фотошоп</h3>
+      <div class="grid-3-square">
+        <img src="./images/new/ps1.jpg" class="creative-img" loading="lazy" decoding="async" alt="Фотошоп 1">
+        <img src="./images/new/ps2.jpg" class="creative-img" loading="lazy" decoding="async" alt="Фотошоп 2">
+        <img src="./images/new/ps3.jpg" class="creative-img" loading="lazy" decoding="async" alt="Фотошоп 3">
+      </div>
+    </div>
+
+    <!-- Логотипы -->
+    <div class="creativity-block reveal">
+      <h3 class="creativity-title">Логотипы</h3>
+      <div class="grid-3-square">
+        <img src="./images/new/logo1.jpg" class="creative-img" loading="lazy" decoding="async" alt="Логотип 1">
+        <img src="./images/new/logo2.jpg" class="creative-img" loading="lazy" decoding="async" alt="Логотип 2">
+        <img src="./images/new/logo3.jpg" class="creative-img" loading="lazy" decoding="async" alt="Логотип 3">
+      </div>
+    </div>
+
+    <!-- Горжусь -->
+    <div class="creativity-block reveal">
+      <h3 class="creativity-title">Горжусь</h3>
+      <p class="pride-desc">Победа в государственном конкурсе приуроченном к году агро-промышленного комплекса. Символ года целого государства, был отчеканен на юбилейных монетах и вышел в почтовых тиражах марок.</p>
+      <div class="grid-3-square">
+        <img src="./images/new/win1.jpg" class="creative-img" loading="lazy" decoding="async" alt="Награда 1">
+        <div class="flip-card" id="flipCard">
+          <div class="flip-card-inner">
+            <img src="./images/new/win2-1.jpg" class="flip-card-front" loading="lazy" decoding="async" alt="Награда 2.1">
+            <img src="./images/new/win2-2.jpg" class="flip-card-back" loading="lazy" decoding="async" alt="Награда 2.2">
+          </div>
+        </div>
+        <img src="./images/new/win3.jpg" class="creative-img" loading="lazy" decoding="async" alt="Награда 3">
+      </div>
+    </div>
+
+    <!-- Предметная съёмка -->
+    <div class="creativity-block reveal">
+      <h3 class="creativity-title">Предметная съёмка</h3>
+      <div class="grid-3-square">
+        <img src="./images/new/pr1.jpg" class="creative-img" loading="lazy" decoding="async" alt="Предметная съёмка 1">
+        <img src="./images/new/pr2.jpg" class="creative-img" loading="lazy" decoding="async" alt="Предметная съёмка 2">
+        <img src="./images/new/pr3.jpg" class="creative-img" loading="lazy" decoding="async" alt="Предметная съёмка 3">
+      </div>
+    </div>
+
+    <!-- Фото, видео -->
+    <div class="creativity-block reveal" style="margin-bottom: 0;">
+      <h3 class="creativity-title">Фото, видео</h3>
+      <div class="mixed-media-grid" id="mixedGrid"></div>
+      <div class="show-more-wrap">
+        <button class="btn" id="showMoreBtn">Показать еще (<span class="counter">16</span>)</button>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -844,10 +999,9 @@ section { padding: 120px 0; position: relative; }
 <script>
 (function() {
   gsap.registerPlugin(ScrollTrigger);
-
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Split text into spans (character by character)
+  // Split text into spans
   function splitText(el) {
     if (el.dataset.splitDone) return el.querySelectorAll('span.char');
     const text = el.textContent;
@@ -865,12 +1019,11 @@ section { padding: 120px 0; position: relative; }
     return chars;
   }
 
-  // Initial state
+  // Инициализация без ожидания window.load, чтобы избежать исчезновения элементов
   gsap.set('.reveal', { opacity: 0, y: 40 });
 
-  window.addEventListener('load', function() {
-    // ---- Hero entrance animation ----
-    const heroName = document.querySelector('.hero-name');
+  const heroName = document.querySelector('.hero-name');
+  if (heroName) {
     const nameChars = splitText(heroName);
     gsap.set(nameChars, { opacity: 0, y: 50, rotateZ: 4 });
     gsap.set('.hero-title, .hero-subtitle, .hero .btn, .hero-scroll', { opacity: 0, y: 20 });
@@ -885,120 +1038,186 @@ section { padding: 120px 0; position: relative; }
       .to('.hero-subtitle', { opacity: 1, y: 0, duration: 0.7 }, '-=0.5')
       .to('.hero .btn', { opacity: 1, y: 0, duration: 0.7 }, '-=0.5')
       .to('.hero-scroll', { opacity: 1, y: 0, duration: 0.7 }, '-=0.3');
+  }
 
-    // ---- Parallax on hero background ----
-    if (!reduceMotion) {
-      gsap.to('.hero-bg', {
-        yPercent: 25,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '.hero',
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 0.5
-        }
-      });
-    }
-
-    // ---- Split text headings on scroll ----
-    document.querySelectorAll('[data-split]:not(.hero-name)').forEach(function(el) {
-      const chars = splitText(el);
-      gsap.set(chars, { opacity: 0, y: 30, rotateZ: 3 });
-      ScrollTrigger.create({
-        trigger: el,
-        start: 'top 85%',
-        once: true,
-        onEnter: function() {
-          gsap.to(chars, {
-            opacity: 1, y: 0, rotateZ: 0,
-            duration: 0.7, stagger: 0.022,
-            ease: 'power3.out'
-          });
-        }
-      });
+  // Parallax on hero background
+  if (!reduceMotion) {
+    gsap.to('.hero-bg', {
+      yPercent: 25,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '.hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 0.5
+      }
     });
+  }
 
-    // ---- Reveal blocks on scroll ----
-    gsap.utils.toArray('.reveal').forEach(function(el) {
-      if (el.hasAttribute('data-split')) return;
-      ScrollTrigger.create({
-        trigger: el,
-        start: 'top 88%',
-        once: true,
-        onEnter: function() {
-          gsap.to(el, {
-            opacity: 1, y: 0,
-            duration: 1, ease: 'power3.out'
-          });
-        }
-      });
-    });
-
-    // ---- Stagger project cards ----
-    gsap.utils.toArray('.project-card').forEach(function(card, i) {
-      // Override the reveal with staggered timing
-    });
-
-    // ---- Diagram nodes stagger ----
-    const diagramNodes = document.querySelectorAll('.diagram-node');
-    if (diagramNodes.length) {
-      gsap.set(diagramNodes, { opacity: 0, scale: 0.9 });
-      ScrollTrigger.create({
-        trigger: '.diagram',
-        start: 'top 75%',
-        once: true,
-        onEnter: function() {
-          gsap.to(diagramNodes, {
-            opacity: 1, scale: 1,
-            duration: 0.8, stagger: 0.08,
-            ease: 'power3.out'
-          });
-          gsap.from('.diagram-center', {
-            opacity: 0, scale: 0.7,
-            duration: 1, ease: 'back.out(1.7)'
-          });
-        }
-      });
-    }
-
-    // ---- Gallery items stagger ----
-    const galleryItems = document.querySelectorAll('.gallery-item');
-    if (galleryItems.length) {
-      gsap.set(galleryItems, { opacity: 0, y: 30 });
-      ScrollTrigger.create({
-        trigger: '.gallery',
-        start: 'top 80%',
-        once: true,
-        onEnter: function() {
-          gsap.to(galleryItems, {
-            opacity: 1, y: 0,
-            duration: 0.7, stagger: 0.06,
-            ease: 'power3.out'
-          });
-        }
-      });
-    }
-
-    // ---- Chips stagger ----
-    document.querySelectorAll('.tools-group').forEach(function(group) {
-      const chips = group.querySelectorAll('.chip');
-      gsap.set(chips, { opacity: 0, y: 15 });
-      ScrollTrigger.create({
-        trigger: group,
-        start: 'top 88%',
-        once: true,
-        onEnter: function() {
-          gsap.to(chips, {
-            opacity: 1, y: 0,
-            duration: 0.5, stagger: 0.04,
-            ease: 'power2.out'
-          });
-        }
-      });
+  // Split text headings on scroll
+  document.querySelectorAll('[data-split]:not(.hero-name)').forEach(function(el) {
+    const chars = splitText(el);
+    gsap.set(chars, { opacity: 0, y: 30, rotateZ: 3 });
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 85%',
+      once: true,
+      onEnter: function() {
+        gsap.to(chars, {
+          opacity: 1, y: 0, rotateZ: 0,
+          duration: 0.7, stagger: 0.022,
+          ease: 'power3.out'
+        });
+      }
     });
   });
 
-  // Refresh ScrollTrigger on resize (debounced)
+  // Reveal blocks on scroll
+  gsap.utils.toArray('.reveal').forEach(function(el) {
+    if (el.hasAttribute('data-split')) return;
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 88%',
+      once: true,
+      onEnter: function() {
+        gsap.to(el, {
+          opacity: 1, y: 0,
+          duration: 1, ease: 'power3.out'
+        });
+      }
+    });
+  });
+
+  // Diagram nodes stagger
+  const diagramNodes = document.querySelectorAll('.diagram-node');
+  if (diagramNodes.length) {
+    gsap.set(diagramNodes, { opacity: 0, scale: 0.9 });
+    ScrollTrigger.create({
+      trigger: '.diagram',
+      start: 'top 75%',
+      once: true,
+      onEnter: function() {
+        gsap.to(diagramNodes, {
+          opacity: 1, scale: 1,
+          duration: 0.8, stagger: 0.08,
+          ease: 'power3.out'
+        });
+        gsap.from('.diagram-center', {
+          opacity: 0, scale: 0.7,
+          duration: 1, ease: 'back.out(1.7)'
+        });
+      }
+    });
+  }
+
+  // Chips stagger
+  document.querySelectorAll('.tools-group').forEach(function(group) {
+    const chips = group.querySelectorAll('.chip');
+    gsap.set(chips, { opacity: 0, y: 15 });
+    ScrollTrigger.create({
+      trigger: group,
+      start: 'top 88%',
+      once: true,
+      onEnter: function() {
+        gsap.to(chips, {
+          opacity: 1, y: 0,
+          duration: 0.5, stagger: 0.04,
+          ease: 'power2.out'
+        });
+      }
+    });
+  });
+
+  // ============ FLIP CARD LOGIC ============
+  const flipCard = document.getElementById('flipCard');
+  if (flipCard) {
+    setInterval(() => {
+      flipCard.classList.toggle('flipped');
+    }, 3000);
+  }
+
+  // ============ MIXED MEDIA LOGIC ============
+  const mixedGrid = document.getElementById('mixedGrid');
+  if (mixedGrid) {
+    const photos = [];
+    for(let i=1; i<=11; i++) photos.push({type: 'photo', src: `./images/new/ph${i}.jpg`});
+    const videos = [];
+    for(let i=1; i<=11; i++) videos.push({type: 'video', src: `./video/vid${i}.mp4`});
+    
+    let mixed = [...photos, ...videos];
+    // Fisher-Yates Shuffle for harmony
+    for(let i = mixed.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [mixed[i], mixed[j]] = [mixed[j], mixed[i]];
+    }
+
+    let visibleCount = 6;
+    const showMoreBtn = document.getElementById('showMoreBtn');
+    const counterEl = showMoreBtn.querySelector('.counter');
+
+    function renderGrid() {
+      mixedGrid.innerHTML = '';
+      const itemsToRender = mixed.slice(0, visibleCount);
+      
+      itemsToRender.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = `media-item media-${item.type}`;
+        
+        if (item.type === 'photo') {
+          const img = document.createElement('img');
+          img.src = item.src;
+          img.loading = 'lazy';
+          img.decoding = 'async';
+          img.alt = `Фото ${index+1}`;
+          div.appendChild(img);
+        } else {
+          const video = document.createElement('video');
+          video.src = item.src;
+          video.muted = true;
+          video.loop = true;
+          video.playsInline = true;
+          video.preload = 'none'; // Оптимизация
+          div.appendChild(video);
+          
+          // Оптимизация: Воспроизводим видео только когда оно в зоне видимости
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                video.play().catch(()=>{});
+              } else {
+                video.pause();
+              }
+            });
+          }, { threshold: 0.3 });
+          observer.observe(div);
+        }
+        
+        mixedGrid.appendChild(div);
+        
+        // Плавное появление
+        setTimeout(() => {
+          div.classList.add('visible');
+        }, index * 50);
+      });
+      
+      const remaining = mixed.length - visibleCount;
+      if (remaining <= 0) {
+        showMoreBtn.style.display = 'none';
+      } else {
+        showMoreBtn.style.display = 'inline-flex';
+        counterEl.textContent = remaining;
+      }
+    }
+    
+    showMoreBtn.addEventListener('click', () => {
+      visibleCount += 6;
+      renderGrid();
+    });
+    
+    renderGrid();
+  }
+
+  // Refresh ScrollTrigger on resize
   let resizeTimer;
   window.addEventListener('resize', function() {
     clearTimeout(resizeTimer);
